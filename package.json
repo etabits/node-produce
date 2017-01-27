@@ -1,0 +1,39 @@
+{
+  "name": "produce",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "pretest": "standard --verbose && jshint --verbose --exclude-path .gitignore .",
+    "test": "nyc ava",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/etabits/node-produce.git"
+  },
+  "keywords": [
+  ],
+  "author": "Hasan Arous <arous.hasan@gmail.com> (http://www.etabits.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/etabits/node-produce/issues"
+  },
+  "homepage": "https://github.com/etabits/node-produce#readme",
+  "devDependencies": {
+    "ava": "^0.17.0",
+    "coveralls": "^2.11.15",
+    "jshint": "^2.9.4",
+    "nyc": "^10.1.2",
+    "standard": "^8.6.0"
+  },
+  "jshintConfig": {
+    "asi": true,
+    "esversion": 6,
+    "strict": true,
+    "node": true
+  }
+}
