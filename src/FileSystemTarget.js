@@ -22,11 +22,11 @@ class DirectoryNestedWriter extends stream.Writable {
         callback()
       })
     } else {
-      if (!chunk.reader) {
-        chunk.reader = fs.createReadStream(chunk.absPath)
+      var writer = fs.createWriteStream(absPath)
+      if (chunk.data) {
+        return writer.end(chunk.data, callback)
       }
-      chunk.reader.pipe(fs.createWriteStream(absPath))
-      .on('finish', callback)
+      fs.createReadStream(chunk.absPath).pipe(writer).on('finish', callback)
     }
   }
 }
