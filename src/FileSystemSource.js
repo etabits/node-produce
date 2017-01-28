@@ -35,7 +35,7 @@ class DirectoryNestedReader extends stream.Readable {
     } else if (!self.files.length && self.directories.length) {
       var dir = self.directories.shift()
       self.log('consuming from directory', dir.absPath)
-      fs.readdir(dir.absPath, {}, function (error, mixedFiles) {
+      fs.readdir(dir.absPath, function (error, mixedFiles) {
         if (error) {
           return self.emit('error', error)
         }
