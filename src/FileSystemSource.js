@@ -81,7 +81,7 @@ class DirectoryNestedReader extends stream.Readable {
 
 class FileSystem {
   constructor (base) {
-    this.base = base
+    this.base = path.resolve(process.cwd(), base)
   }
 
   list () {
@@ -96,6 +96,10 @@ class FileSystem {
     }
     file.relPath = path.normalize(file.relPath)
     file.absPath = path.join(this.base, file.relPath)
+    if (!file.absPath.startsWith(this.base)) {
+      // FIXME better error message
+      throw new Error('Crossed base boundary')
+    }
 
     return new Promise(function (resolve, reject) {
       if (file.stat) return resolve(file)
