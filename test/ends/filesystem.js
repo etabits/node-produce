@@ -38,12 +38,11 @@ test.cb('source.list', t => {
 })
 
 test.cb('source.get', t => {
-  t.plan(4)
-  fsr.get(__relname, function (err, result) {
-    t.is(err, null)
-    t.true(result.reader instanceof stream.Readable)
+  t.plan(2)
+  fsr.get(__relname)
+  .then(function (result) {
     t.is(result.absPath, __filename)
-    result.reader.on('data', function (data) {
+    fs.createReadStream(result.absPath).on('data', function (data) {
       t.is("'use strict'\n", data.toString().substr(0, 13))
       t.end()
     })
@@ -69,10 +68,10 @@ test.cb('pipe', t => {
 })
 
 test.cb('manual', t => {
-  t.plan(4)
+  t.plan(3)
   var fsw = new FileSystemTarget(path.resolve(targetDirectory, 'manual'))
-  fsr.get(__relname, (error, result) => {
-    t.is(error, null)
+  fsr.get(__relname)
+  .then(result => {
     t.is(result.type, 'f')
     fsw.put({
       relPath: '.',
@@ -117,3 +116,5 @@ test.cb('target.put', t => {
     })
   })
 })
+
+test.todo('run')
