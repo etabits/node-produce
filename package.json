@@ -35,5 +35,8 @@
     "esversion": 6,
     "strict": true,
     "node": true
+  },
+  "dependencies": {
+    "line": "git+https://github.com/etabits/node-line.git"
   }
 }
