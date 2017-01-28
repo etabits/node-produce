@@ -10,7 +10,7 @@ const FileSystemTarget = require('../../src/FileSystemTarget')
 
 const fsr = new FileSystemSource(path.join(__dirname, '../'))
 
-var targetDirectory = path.resolve(__dirname, '../../tmp/test')
+var targetDirectory = path.resolve(__dirname, '../../tmp_test')
 
 const __basename = path.basename(__filename)
 const __relname = path.join(path.basename(__dirname), __basename)
