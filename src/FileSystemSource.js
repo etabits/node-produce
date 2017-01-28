@@ -88,15 +88,28 @@ class FileSystem {
     return new DirectoryNestedReader(this.base)
   }
 
-  get (relPath, cb) {
-    var absPath = path.resolve(this.base, relPath)
-    var result = {
-      type: 'f',
-      relPath,
-      absPath,
-      reader: fs.createReadStream(absPath)
+  get (file) {
+    if (typeof file === 'string') {
+      file = {
+        relPath: file
+      }
     }
-    cb(null, result)
+    file.relPath = path.normalize(file.relPath)
+    file.absPath = path.join(this.base, file.relPath)
+
+    return new Promise(function (resolve, reject) {
+      if (file.stat) return resolve(file)
+      fs.stat(file.absPath, (error, stat) => {
+        if (error) {
+          if (error.code === 'ENOENT') {
+            return resolve()
+          }
+          return reject(error)
+        }
+        file.type = stat.isDirectory() ? 'd' : 'f'
+        resolve(file)
+      })
+    })
   }
 }
 
