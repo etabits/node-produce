@@ -81,12 +81,12 @@ class Produce {
     // })
   }
 
-  run () {
+  run (callback) {
     var self = this
 
     if (typeof self.target.run === 'function') {
       self.target.produce = self
-      return self.target.run()
+      return self.target.run(callback)
     }
 
     self.source.list().on('data', function (input) {

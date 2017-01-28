@@ -20,8 +20,8 @@ class HTTPTarget {
     .catch(error => console.error(error))
   }
 
-  run () {
-    this.server.listen(this.opts.port)
+  run (callback) {
+    this.server.listen(this.opts.port, callback)
     console.log(`Listening at http://127.0.0.1:${this.opts.port}/`)
   }
 }
