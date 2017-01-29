@@ -89,12 +89,29 @@ class Produce {
       return self.target.run(callback)
     }
 
-    self.source.list().on('data', function (input) {
+    var total = 0
+    var processed = 0
+    var sourceEnded = false
+    self.source.list()
+    .on('data', function (input) {
+      debug('got read', total, 'for file', input.relPath)
+      ++total
       self.process({input}).then((io) => {
+        debug('engine: sending write to target', processed)
+        ++processed
         self.target.put(io.output)
+        if (sourceEnded && processed === total) {
+          debug('last write, source ended')
+          self.target.writer.end()
+        }
       })
       .catch(error => console.error(error))
     })
+    .on('end', function () {
+      debug('source list ended with ', total, 'elements')
+      sourceEnded = true
+    })
+    // self.target.writer.on('finish', callback)
   }
 }
 
