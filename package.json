@@ -1,6 +1,6 @@
 {
   "name": "produce",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -15,8 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/etabits/node-produce.git"
   },
-  "keywords": [
-  ],
+  "keywords": [],
   "author": "Hasan Arous <arous.hasan@gmail.com> (http://www.etabits.com/)",
   "license": "MIT",
   "bugs": {
