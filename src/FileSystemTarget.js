@@ -38,8 +38,11 @@ class FileSystem {
   }
 
   put (file) {
+    debug('write requested', file.relPath)
     this.writer.write(file)
   }
 }
 
 module.exports = FileSystem
+
+var debug = ((/^produce(:|$)/).test(process.env.DEBUG)) ? require('./debug') : () => {}
