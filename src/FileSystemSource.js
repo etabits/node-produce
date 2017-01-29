@@ -10,7 +10,7 @@ class DirectoryNestedReader extends stream.Readable {
     options.objectMode = true
     super(options)
     this.base = base
-    this.log('instantiated with base=', base)
+    debug('instantiated with base=', base)
     this.files = [{
       relPath: '.',
       absPath: this.base,
@@ -20,35 +20,35 @@ class DirectoryNestedReader extends stream.Readable {
   }
 
   _read () {
-    this.log('read requested')
+    debug('read requested')
     this.$read()
   }
 
   $read () {
     var self = this
-    self.log('internal read requested')
+    debug('internal read requested')
 
     if (self.files.length) {
-      self.log('consuming from files', self.files.length)
+      debug('consuming from files', self.files.length)
       while (self.files.length > 0 && self.push(self.files.shift()));
-      self.log('done consuming', self.files.length)
+      debug('done consuming', self.files.length)
     } else if (!self.files.length && self.directories.length) {
       var dir = self.directories.shift()
-      self.log('consuming from directory', dir.absPath)
+      debug('consuming from directory', dir.absPath)
       fs.readdir(dir.absPath, function (error, mixedFiles) {
         if (error) {
           return self.emit('error', error)
         }
 
         var totalElements = mixedFiles.length
-        self.log('got', totalElements, 'elements')
+        debug('got', totalElements, 'elements')
         if (totalElements === 0) {
           return self.$read()
         }
         var processedElements = 0
         var statHandler = function (relPath) {
           var absPath = path.resolve(self.base, relPath)
-          self.log('stating', relPath)
+          debug('stating', relPath)
           fs.stat(absPath, function (error, stat) {
             if (error) {
               return self.emit('error', error)
@@ -75,8 +75,6 @@ class DirectoryNestedReader extends stream.Readable {
       this.push(null)
     }
   }
-
-  log () {}
 }
 
 class FileSystem {
@@ -117,8 +115,6 @@ class FileSystem {
   }
 }
 
-module.exports = FileSystem;
+module.exports = FileSystem
 
-/* jshint ignore:start */
-((/(^|,)produce(:|$)/).test(process.env.DEBUG)) && require('./debug')(DirectoryNestedReader)
-/* jshint ignore:end */
+var debug = ((/^produce(:|$)/).test(process.env.DEBUG)) ? require('./debug') : () => {}

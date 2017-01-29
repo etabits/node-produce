@@ -64,7 +64,7 @@ class Produce {
     })
     .then(function (input) {
       if (input.type === 'd') {
-        self.log('ISDIR', io)
+        debug('ISDIR', io)
         return
       } else if (!io.rule) {
         io.output.reader = io.input.reader
@@ -96,12 +96,8 @@ class Produce {
       .catch(error => console.error(error))
     })
   }
-
-  log () {}
 }
 
-module.exports = Produce;
+module.exports = Produce
 
-/* jshint ignore:start */
-((/(^|,)produce(:|$)/).test(process.env.DEBUG)) && require('./src/debug')(Produce)
-/* jshint ignore:end */
+var debug = ((/^produce(:|$)/).test(process.env.DEBUG)) ? require('./debug') : () => {}

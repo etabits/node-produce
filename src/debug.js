@@ -1,10 +1,7 @@
 'use strict'
 const util = require('util')
 
-module.exports = function (cls) {
-  cls.prototype.log = logger
-}
-function logger () {
+module.exports = function logger () {
   console.log.apply(console, Array.from(arguments).map(function (arg) {
     return (typeof arg !== 'object') ? arg : util.inspect(arg, {
       depth: 0,
