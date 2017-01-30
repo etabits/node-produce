@@ -15,12 +15,9 @@ var p = new Produce({
   target: new HTTPTarget({port: PORT}),
   rules: [
     {
-      source: /\.js$/,
-      sourceExpansions: ['.js', '.potato'],
-      target: /\.js.(md5|sha1)$/,
-      targetExpansions: ['.js.sha1', 'js.md5'],
-      defaultTarget: '.js.sha1',
-      via: line([
+      source: ['.js'],
+      target: ['.js.sha1', '.js.md5'],
+      via: [
         {stream: function () {
           var hash = 'sha1'
           if (this.output.relPath.endsWith('.md5')) {
@@ -28,7 +25,7 @@ var p = new Produce({
           }
           return require('crypto').createHash(hash)
         }}
-      ])
+      ]
     }
   ]
 })

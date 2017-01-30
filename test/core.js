@@ -7,8 +7,6 @@ const fs = require('fs')
 const FileSystemSource = require('../src/FileSystemSource')
 const FileSystemTarget = require('../src/FileSystemTarget')
 
-const line = require('line')
-
 const Produce = require('../src/Produce')
 
 var targetDirectory = path.resolve(__dirname, '../tmp_test')
@@ -18,12 +16,9 @@ var p = new Produce({
   target: new FileSystemTarget(path.join(targetDirectory, 'src_hash')),
   rules: [
     {
-      source: /\.js$/,
-      sourceExpansions: ['.js', '.potato'],
-      target: /\.js.(md5|sha1)$/,
-      targetExpansions: ['.js.sha1', 'js.md5'],
-      defaultTarget: '.info',
-      via: line([
+      source: ['.js'],
+      target: ['.info', '.js.md5'],
+      via: [
         {stream: function () {
           var hash = 'sha1'
           if (this.output.relPath.endsWith('.md5')) {
@@ -34,7 +29,7 @@ var p = new Produce({
         function (buf) {
           return this.input.relPath + ':' + buf.toString('hex')
         }
-      ])
+      ]
     }
   ]
 })

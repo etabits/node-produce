@@ -2,11 +2,13 @@
 
 const fs = require('fs')
 
+const utilities = require('../src/utilities')
+
 class Produce {
   constructor (opts) {
     this.source = opts.source
     this.target = opts.target
-    this.rules = opts.rules
+    this.rules = opts.rules.map(utilities.expandRule)
   }
 
   getRule (io) {
@@ -17,8 +19,9 @@ class Produce {
         type: io.input.type
       }
       for (let r of this.rules) {
-        if (r.source.test(io.input.relPath)) {
-          io.output.relPath = io.input.relPath.replace(r.source, r.defaultTarget)
+        var targets = r.sourceTargets(io.input.relPath)
+        if (targets) {
+          io.output.relPath = targets[0]
           io.rule = r
           return Promise.resolve()
         }
@@ -28,14 +31,11 @@ class Produce {
     }
     // No input! We will have to search for candidates
     var candidates = []
-    for (let r of this.rules) {
-      if (r.target.test(io.output.relPath)) {
-        for (let ext of r.sourceExpansions) {
-          candidates.push({
-            fname: io.output.relPath.replace(r.target, ext),
-            rule: r,
-            ext: ext
-          })
+    for (let rule of this.rules) {
+      var sources = rule.targetSources(io.output.relPath)
+      if (sources) {
+        for (var i = 0, len = sources.length; i < len; ++i) {
+          candidates.push({fname: sources[i], rule})
         }
       }
     }
