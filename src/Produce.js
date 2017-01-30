@@ -24,7 +24,7 @@ class Produce {
           for (let i = 0, len = targets.length; i < len; ++i) {
             io.outputs.push({
               type: io.input.type,
-              relPath: targets[0],
+              relPath: targets[i],
               rule: r
             })
             if (outputsPolicy === 'one') return Promise.resolve()
