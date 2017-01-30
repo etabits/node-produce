@@ -15,7 +15,9 @@
     "type": "git",
     "url": "git+https://github.com/etabits/node-produce.git"
   },
-  "keywords": [],
+  "keywords": [
+    "produce"
+  ],
   "author": "Hasan Arous <arous.hasan@gmail.com> (http://www.etabits.com/)",
   "license": "MIT",
   "bugs": {
