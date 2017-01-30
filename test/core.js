@@ -6,16 +6,13 @@ const fs = require('fs')
 
 const line = require('line')
 
-const FileSystemSource = require('../src/FileSystemSource')
-const FileSystemTarget = require('../src/FileSystemTarget')
-
 const Produce = require('../src/Produce')
 
 var targetDirectory = path.resolve(__dirname, '../tmp_test')
 
 var p = new Produce({
-  source: new FileSystemSource('./test/fixtures/core'),
-  target: new FileSystemTarget(path.join(targetDirectory, 'core')),
+  source: './test/fixtures/core',
+  target: path.join(targetDirectory, 'core'),
   rules: [
     {
       source: ['.txt'],

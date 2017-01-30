@@ -2,12 +2,20 @@
 
 const fs = require('fs')
 
-const utilities = require('../src/utilities')
+const utilities = require('./utilities')
+const FileSystemSource = require('./FileSystemSource')
+const FileSystemTarget = require('./FileSystemTarget')
 
 class Produce {
   constructor (opts) {
     this.source = opts.source
+    if (typeof this.source === 'string') {
+      this.source = new FileSystemSource(this.source)
+    }
     this.target = opts.target
+    if (typeof this.target === 'string') {
+      this.target = new FileSystemTarget(this.target)
+    }
     this.rules = opts.rules.map(utilities.expandRule)
   }
 
