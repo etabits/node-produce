@@ -15,18 +15,29 @@ class Produce {
     var self = this
     // If we have input, all we need to do is to find a matching rule
     if (io.input) {
-      io.output = {
-        type: io.input.type
-      }
+      var outputsPolicy = 'all'
+      // There should be outputsPolicy: one | rule | all | one!?
+      io.outputs = []
       for (let r of this.rules) {
         var targets = r.sourceTargets(io.input.relPath)
         if (targets) {
-          io.output.relPath = targets[0]
-          io.rule = r
-          return Promise.resolve()
+          for (let i = 0, len = targets.length; i < len; ++i) {
+            io.outputs.push({
+              type: io.input.type,
+              relPath: targets[0],
+              rule: r
+            })
+            if (outputsPolicy === 'one') return Promise.resolve()
+          }
+          if (outputsPolicy === 'rule') return Promise.resolve()
         }
       }
-      io.output.relPath = io.input.relPath
+      if (!io.outputs.length && outputsPolicy) {
+        io.outputs.push({
+          type: io.input.type,
+          relPath: io.input.relPath
+        })
+      }
       return Promise.resolve()
     }
     // No input! We will have to search for candidates
@@ -34,7 +45,7 @@ class Produce {
     for (let rule of this.rules) {
       var sources = rule.targetSources(io.output.relPath)
       if (sources) {
-        for (var i = 0, len = sources.length; i < len; ++i) {
+        for (let i = 0, len = sources.length; i < len; ++i) {
           candidates.push({fname: sources[i], rule})
         }
       }
@@ -63,6 +74,10 @@ class Produce {
       return self.source.get(io.input)
     })
     .then(function (input) {
+      if (!io.output) {
+        io.output = io.outputs[0]
+        io.rule = io.output.rule
+      }
       if (input.type === 'd') {
         debug('ISDIR', io)
         return
