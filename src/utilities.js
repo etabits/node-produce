@@ -25,7 +25,7 @@ utilities.autoHandlers.sourceTargets = function (source) {
   for (var i = 0, len = this.source.length; i < len; ++i) {
     if (source.endsWith(this.source[i])) {
       var basename = source.substr(0, source.length - this.source[i].length)
-      return this.target.map(t => basename + t)
+      return this.target.map(addSuffix(basename))
     }
   }
   return null
@@ -34,10 +34,12 @@ utilities.autoHandlers.targetSources = function (target) {
   for (var i = 0, len = this.target.length; i < len; ++i) {
     if (target.endsWith(this.target[i])) {
       var basename = target.substr(0, target.length - this.target[i].length)
-      return this.source.map(s => basename + s)
+      return this.source.map(addSuffix(basename))
     }
   }
   return null
 }
+
+var addSuffix = (basename) => (suffix) => basename + suffix
 
 module.exports = utilities
