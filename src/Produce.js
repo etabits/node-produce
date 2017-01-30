@@ -90,7 +90,9 @@ class Produce {
       for (let i = 0, len = io.outputs.length; i < len; ++i) {
         var output = io.outputs[i]
         if (!output.rule) {
-          output.reader = io.input.reader
+          output.absPath = input.absPath
+          promises.push(Promise.resolve())
+          continue
         }
         // FIXME set more context?
         // FIXME createReadStream and pipe it somehow,
