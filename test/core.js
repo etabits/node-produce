@@ -4,6 +4,8 @@ import test from 'ava'
 const path = require('path')
 const fs = require('fs')
 
+const line = require('line')
+
 const FileSystemSource = require('../src/FileSystemSource')
 const FileSystemTarget = require('../src/FileSystemTarget')
 
@@ -12,12 +14,12 @@ const Produce = require('../src/Produce')
 var targetDirectory = path.resolve(__dirname, '../tmp_test')
 
 var p = new Produce({
-  source: new FileSystemSource('./src'),
-  target: new FileSystemTarget(path.join(targetDirectory, 'src_hash')),
+  source: new FileSystemSource('./test/fixtures/core'),
+  target: new FileSystemTarget(path.join(targetDirectory, 'core')),
   rules: [
     {
-      source: ['.js'],
-      target: ['.info', '.js.md5'],
+      source: ['.txt'],
+      target: ['.txt.sha1', '.txt.md5'],
       via: [
         {stream: function () {
           var hash = 'sha1'
@@ -36,13 +38,18 @@ var p = new Produce({
 
 test.cb.before(t => fs.mkdir(targetDirectory, () => t.end()))
 
-test.cb('build', t => {
+test('build', t => {
+  t.plan(2)
   p.run()
-  p.target.writer.on('finish', function () {
-    fs.readFile(path.resolve(targetDirectory, 'src_hash/Produce.info'), function (error, data) {
-      t.is(error, null)
-      t.true(/^Produce\.js:[0-9a-f]{40}$/.test(data.toString()))
-      t.end()
+  return new Promise(function (resolve, reject) {
+    p.target.writer.on('finish', resolve)
+  }).then(function () {
+    return line([{
+      sha1: (v, done) => void fs.readFile(path.resolve(targetDirectory, 'core/etabits.txt.sha1'), 'utf8', done),
+      md5: (v, done) => void fs.readFile(path.resolve(targetDirectory, 'core/etabits.txt.md5'), 'utf8', done)
+    }])().then(function (results) {
+      t.is(results.sha1, 'etabits.txt:1958d8b896c2764f4e76dd35d29054994d8c671c')
+      t.is(results.md5, 'etabits.txt:4d4e4e73bc4d4535b6126a6bb161eb5e')
     })
   })
 })

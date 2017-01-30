@@ -74,22 +74,37 @@ class Produce {
       return self.source.get(io.input)
     })
     .then(function (input) {
-      if (!io.output) {
-        io.output = io.outputs[0]
-        io.rule = io.output.rule
+      if (io.output) {
+        return io.rule.via(fs.createReadStream(input.absPath), io).then(function (data) {
+          io.output.data = data
+          return io
+        })
       }
+
       if (input.type === 'd') {
         debug('ISDIR', io)
-        return
-      } else if (!io.rule) {
-        io.output.reader = io.input.reader
-        return
+        return io
       }
-      return io.rule.via(fs.createReadStream(input.absPath), io)
-    })
-    .then(function (data) {
-      io.output.data = data
-      return io
+
+      var promises = []
+      for (let i = 0, len = io.outputs.length; i < len; ++i) {
+        var output = io.outputs[i]
+        if (!output.rule) {
+          output.reader = io.input.reader
+        }
+        // FIXME set more context?
+        // FIXME createReadStream and pipe it somehow,
+        // maybe we should make line pipe input streams instead of reading them
+        // as one can only do one https://nodejs.org/api/stream.html
+        promises.push(output.rule.via(fs.createReadStream(input.absPath), {input, output}))
+      }
+
+      return Promise.all(promises).then(function (results) {
+        for (let i = 0, len = io.outputs.length; i < len; ++i) {
+          io.outputs[i].data = results[i]
+        }
+        return io
+      })
     })
     // .catch(error => {
     //   console.error(error)
@@ -112,9 +127,12 @@ class Produce {
       debug('got read', total, 'for file', input.relPath)
       ++total
       self.process({input}).then((io) => {
-        debug('engine: sending write to target', processed)
+        debug('engine: got processing results', processed, 'x' + io.outputs.length)
         ++processed
-        self.target.put(io.output)
+        for (let i = 0, len = io.outputs.length; i < len; ++i) {
+          debug('engine: sending write', i, 'to target', io.outputs[i].relPath)
+          self.target.put(io.outputs[i])
+        }
         if (sourceEnded && processed === total) {
           debug('last write, source ended')
           self.target.writer.end()
