@@ -9,12 +9,14 @@ class HTTPTarget {
   }
 
   requestHandler (req, res) {
+    debug('http: got request', req.url)
     this.produce.process({
       output: {
         relPath: req.url
       }
     })
     .then(function (result) {
+      debug('http: processed request', req.url)
       res.end(result.output.data)
     })
     .catch(error => console.error(error))
@@ -27,3 +29,5 @@ class HTTPTarget {
 }
 
 module.exports = HTTPTarget
+
+var debug = ((/^produce(:|$)/).test(process.env.DEBUG)) ? require('./debug') : () => {}
