@@ -32,3 +32,9 @@ js: babel | add_header_note(preview) | closure > js
 ## Terminology
 - Source.read(input)
 - Target.write(output)
+
+## CLI
+```sh
+proudce sourceDir targetDir # fs source and fs target
+proudce sourceDir # fs source and http target
+```
