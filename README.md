@@ -1,7 +1,8 @@
 # produce - WIP
 
-## Zeroconf
-Install required plugins and it will automatically produce output
+## No Configuration
+Install required plugins and it will automatically use them to produce output/serve content
+Example: https://github.com/aularon/produce-example-no-conf
 
 ## Simple conf
 ```
