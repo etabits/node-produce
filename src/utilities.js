@@ -5,10 +5,12 @@ const line = require('line')
 var utilities = {}
 
 utilities.expandRule = function (rule) {
+  if (typeof rule.source === 'string') rule.source = [rule.source]
   if (!rule.sourceTargets) {
     rule.sourceTargets = (typeof rule.source === 'function') ? rule.source : utilities.autoHandlers.sourceTargets
   }
 
+  if (typeof rule.target === 'string') rule.target = [rule.target]
   if (!rule.targetSources) {
     rule.targetSources = (typeof rule.target === 'function') ? rule.target : utilities.autoHandlers.targetSources
   }

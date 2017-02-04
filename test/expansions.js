@@ -55,3 +55,5 @@ test('automatically expands array .via', t => {
     t.is(result, 42)
   })
 })
+
+test.todo('expand string source/target into array')
