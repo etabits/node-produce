@@ -1,7 +1,7 @@
 {
   "name": "produce",
-  "version": "0.3.1",
-  "description": "",
+  "version": "0.3.2",
+  "description": "A multi-rule multi-purpose source/target agnostic configurable transformer",
   "main": "index.js",
   "directories": {
     "test": "test"

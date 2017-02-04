@@ -1,4 +1,7 @@
 # produce - WIP
+> A multi-rule multi-purpose source/target agnostic configurable transformer
+
+*This module and documentation is still considered work-in-progress. Only no config example is added below for a preview*
 
 ## No Configuration
 Install required plugins and it will automatically use them to produce output/serve content
