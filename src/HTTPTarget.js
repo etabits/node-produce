@@ -17,6 +17,10 @@ class HTTPTarget {
     })
     .then(function (result) {
       debug('http: processed request', req.url)
+      if (result.output.mimeType) {
+        res.statusCode = 203
+        res.setHeader('Content-Type', result.output.mimeType + '; charset=UTF-8')
+      }
       res.end(result.output.data)
     })
     .catch(error => console.error(error))

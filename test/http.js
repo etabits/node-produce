@@ -56,3 +56,5 @@ test.cb('request alt ext', t => {
     t.end()
   })
 })
+
+test.todo('mime types')
