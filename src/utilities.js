@@ -42,6 +42,10 @@ utilities.autoHandlers.targetSources = function (target) {
   return null
 }
 
+utilities.colorize = (str, color) => `\u001b[${colors.indexOf(color) + 30}m${str}\u001b[39m`
+
 var addSuffix = (basename) => (suffix) => basename + suffix
+
+const colors = [null, 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
 
 module.exports = utilities
