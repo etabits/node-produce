@@ -43,9 +43,35 @@ utilities.autoHandlers.targetSources = function (target) {
 }
 
 utilities.colorize = (str, color) => `\u001b[${colors.indexOf(color) + 30}m${str}\u001b[39m`
+utilities.stylize = (str, s) => `\u001b[${styles[s][0]}m${str}\u001b[${styles[s][1]}m`
+
+utilities.getStringRelative = function (from, to) {
+  var segments = segment(from)
+  var common = ''
+  for (var s of segments) {
+    if (!to.startsWith(s)) break
+    common += s
+    to = to.substr(s.length)
+    from = from.substr(s.length)
+  }
+
+  return {common, from, to}
+}
 
 var addSuffix = (basename) => (suffix) => basename + suffix
 
 const colors = [null, 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
+const styles = {
+  crossed: [9, 29],
+  bold: [1, 22]
+}
+
+const rx = /(^\/)?[^./]+(\.|\/|$)/g
+function segment (p) {
+  var segments = []
+  for (var m; (m = rx.exec(p)) !== null; segments.push(m[0]));
+
+  return segments
+}
 
 module.exports = utilities
