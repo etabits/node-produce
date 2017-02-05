@@ -17,10 +17,12 @@ var p = new Produce({
     {
       source: ['.js'],
       target: ['.js.sha1', '.js.md5'],
+      mimeType: 'text/x-hash',
       via: [
         {stream: function () {
           var hash = 'sha1'
           if (this.output.relPath.endsWith('.md5')) {
+            this.output.mimeType = 'text/x-short-hash'
             hash = 'md5'
           }
           return require('crypto').createHash(hash)
@@ -37,25 +39,35 @@ test.after.cb(t => {
 })
 var httpGet = line([
   function (url, done) {
-    http.get('http://localhost:9000' + url, (res) => done(null, res))
+    var self = this
+    http.get('http://localhost:9000' + url, function (res) {
+      self.res = res
+      done(null, res)
+    })
+  },
+  function (buf) {
+    this.buf = buf
+    return this
   }
 ])
 
-test.cb('request', t => {
-  httpGet('/http.js.sha1')
-  .then(function (buf) {
-    t.is(buf.length, 20)
-    t.end()
+test('request', t => {
+  t.plan(2)
+  return httpGet('/http.js.sha1')
+  .then(function (result) {
+    t.regex(result.res.headers['content-type'], /^text\/x-hash/)
+    t.is(result.buf.length, 20)
   })
 })
 
-test.cb('request alt ext', t => {
-  httpGet('/http.js.md5')
-  .then(function (buf) {
-    t.is(buf.length, 16)
-    t.end()
+test('request alt ext', t => {
+  t.plan(2)
+  return httpGet('/http.js.md5')
+  .then(function (result) {
+    // console.log(result.res.headers['content-type'], /^text\/x-short-hash/)
+    t.regex(result.res.headers['content-type'], /^text\/x-short-hash/)
+    t.is(result.buf.length, 16)
   })
 })
 
-test.todo('mime types')
 test.todo('http errors')
