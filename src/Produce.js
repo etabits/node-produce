@@ -145,8 +145,10 @@ class Produce {
         debug('engine: got processing results', processed, 'x' + io.outputs.length)
         ++processed
         for (let i = 0, len = io.outputs.length; i < len; ++i) {
-          debug('engine: sending write', i, 'to target', io.outputs[i].relPath)
-          self.target.put(io.outputs[i])
+          var output = io.outputs[i]
+          debug('engine: sending write', i, 'to target', output.relPath)
+          self.target.put(output)
+          Produce.logProcessed(input, output)
         }
         if (sourceEnded && processed === total) {
           debug('last write, source ended')
@@ -160,6 +162,24 @@ class Produce {
       sourceEnded = true
     })
     // self.target.writer.on('finish', callback)
+  }
+
+  static logProcessed (input, output) {
+    var logArguments = []
+    if (input.type === 'd') {
+      logArguments.push(utilities.colorize(input.relPath, 'magenta') + '/')
+    } else {
+      var p = utilities.getStringRelative(input.relPath, output.relPath)
+      if (p.to) {
+        logArguments.push(utilities.colorize(p.common, 'green') +
+          utilities.stylize(p.from, 'crossed') +
+          utilities.stylize(utilities.colorize(p.to, 'green'), 'bold'))
+      } else {
+        logArguments.push(utilities.colorize(p.common, 'green'))
+      }
+    }
+
+    console.log.apply(null, logArguments)
   }
 }
 
