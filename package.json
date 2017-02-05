@@ -7,6 +7,9 @@
     "test": "test"
   },
   "bin": "cli.js",
+  "engines": {
+    "node": ">=4"
+  },
   "scripts": {
     "pretest": "standard --verbose && jshint --verbose --exclude-path .gitignore .",
     "test": "nyc ava",
