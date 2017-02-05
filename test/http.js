@@ -58,3 +58,4 @@ test.cb('request alt ext', t => {
 })
 
 test.todo('mime types')
+test.todo('http errors')

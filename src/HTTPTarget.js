@@ -2,6 +2,8 @@
 
 const http = require('http')
 
+const codes = require('./codes')
+
 class HTTPTarget {
   constructor (opts) {
     this.opts = opts
@@ -32,7 +34,22 @@ class HTTPTarget {
       console.log(`${res.statusCode} ${req.url}`, time, len)
       res.end(data)
     })
-    .catch(error => console.error(error))
+    .catch(function (error) {
+      res.setHeader('Content-Type', 'text/plain; charset=UTF-8')
+      var resp, mresp
+      if (error.code === codes.NOT_FOUND) {
+        res.statusCode = 404
+        resp = 'File Not Found'
+        mresp = ''
+      } else {
+        var err = error.error || error
+        res.statusCode = 500
+        resp = err.stack || err.message
+        mresp = err.message
+      }
+      console.log(`${res.statusCode} ${req.url}`, mresp)
+      res.end(resp)
+    })
   }
 
   run (callback) {
