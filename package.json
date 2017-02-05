@@ -40,5 +40,11 @@
   },
   "dependencies": {
     "line": "git+https://github.com/etabits/node-line.git"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }
