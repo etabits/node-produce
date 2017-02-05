@@ -155,7 +155,14 @@ class Produce {
           self.target.writer.end()
         }
       })
-      .catch(error => console.error(error))
+      .catch(function (error) {
+        var err = error.error || error
+        if (error.ctxt && error.ctxt.input && error.ctxt.output) {
+          Produce.logProcessed(error.ctxt.input, error.ctxt.output, err.message)
+        } else {
+          console.error(err.stack || err)
+        }
+      })
     })
     .on('end', function () {
       debug('source list ended with ', total, 'elements')
@@ -164,19 +171,24 @@ class Produce {
     // self.target.writer.on('finish', callback)
   }
 
-  static logProcessed (input, output) {
+  static logProcessed (input, output, error) {
     var logArguments = []
+    var color = error ? 'red' : 'green'
     if (input.type === 'd') {
       logArguments.push(utilities.colorize(input.relPath, 'magenta') + '/')
     } else {
       var p = utilities.getStringRelative(input.relPath, output.relPath)
       if (p.to) {
-        logArguments.push(utilities.colorize(p.common, 'green') +
+        logArguments.push(utilities.colorize(p.common, color) +
           utilities.stylize(p.from, 'crossed') +
-          utilities.stylize(utilities.colorize(p.to, 'green'), 'bold'))
+          utilities.stylize(utilities.colorize(p.to, color), 'bold'))
       } else {
-        logArguments.push(utilities.colorize(p.common, 'green'))
+        logArguments.push(utilities.colorize(p.common, color))
       }
+    }
+
+    if (error) {
+      logArguments.push(error.message || error)
     }
 
     console.log.apply(null, logArguments)
