@@ -2,6 +2,8 @@
 
 const fs = require('fs')
 
+const codes = require('./codes')
+
 const utilities = require('./utilities')
 const FileSystemSource = require('./FileSystemSource')
 const FileSystemTarget = require('./FileSystemTarget')
@@ -68,6 +70,9 @@ class Produce {
         if (!results[i]) continue
         select = i
         break
+      }
+      if (typeof select === 'undefined') {
+        return Promise.reject({code: codes.NOT_FOUND})
       }
       io.input = results[select]
       io.rule = candidates[select].rule
