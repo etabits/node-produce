@@ -27,8 +27,11 @@ if (argvStats[0] && argvStats[0].isDirectory()) {
   pConfig.source = argv[0]
   let packageJSON = JSON.parse(fs.readFileSync(path.join(CWD, 'package.json')))
   let deps = Object.keys(Object.assign({}, packageJSON.dependencies, packageJSON.devDependencies))
+  let pluginsSettings = (packageJSON.produce && packageJSON.produce.plugins) || {}
 
   for (let moduleName of deps) {
+    let normalizedPluginName = moduleName.replace(/^produce[-_.]/, '')
+    let pSettings = pluginsSettings[normalizedPluginName] || {}
     try {
       let resolvedModulePath = Module._resolveFilename(moduleName, referenceModule)
       let resolvedModulePackageJSON = JSON.parse(fs.readFileSync(Module._resolveFilename(moduleName + '/package.json', referenceModule)))
@@ -36,7 +39,7 @@ if (argvStats[0] && argvStats[0].isDirectory()) {
       if (!resolvedModulePackageJSON.keywords || resolvedModulePackageJSON.keywords.indexOf('produce-rule') === -1) {
         continue
       }
-      pConfig.rules.push(require(resolvedModulePath)())
+      pConfig.rules.push(require(resolvedModulePath)(pSettings))
     } catch (e) {
       console.error(e.message)
     }
