@@ -3,6 +3,7 @@
 const http = require('http')
 
 const codes = require('./codes')
+const utilities = require('./utilities')
 
 class HTTPTarget {
   constructor (opts) {
@@ -31,7 +32,7 @@ class HTTPTarget {
       var data = result.output.data
       var len = data.length + ((typeof data === 'string') ? 'c' : 'b')
       var time = (Date.now() - start) + 'ms'
-      console.log(`${res.statusCode} ${req.url}`, time, len)
+      HTTPTarget.logRequest(res.statusCode, req.url, time, len)
       res.end(data)
     })
     .catch(function (error) {
@@ -47,7 +48,7 @@ class HTTPTarget {
         resp = err.stack || err.message
         mresp = err.message
       }
-      console.log(`${res.statusCode} ${req.url}`, mresp)
+      HTTPTarget.logRequest(res.statusCode, req.url, mresp)
       res.end(resp)
     })
   }
@@ -55,6 +56,20 @@ class HTTPTarget {
   run (callback) {
     this.server.listen(this.opts.port, callback)
     console.log(`Listening at http://127.0.0.1:${this.opts.port}/`)
+  }
+
+  static logRequest (code, url) {
+    var color = 'magenta'
+    if (code >= 500) color = 'red'
+    else if (code >= 400) color = 'yellow'
+    else if (code === 203) color = 'green'
+    else if (code === 200) color = 'cyan'
+
+    var logArguments = [
+      `${utilities.colorize(code, color)} ${url}`
+    ].concat(Array.from(arguments).slice(2))
+
+    console.log.apply(null, logArguments)
   }
 }
 
