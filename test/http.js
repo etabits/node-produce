@@ -10,17 +10,22 @@ const FileSystemSource = require('../src/FileSystemSource')
 const HTTPTarget = require('../src/HTTPTarget')
 const Produce = require('../src/Produce')
 
+const CRC32_DUMMY_ERROR_MESSAGE = 'CRC32 is not supported on this platform'
+
 var p = new Produce({
   source: new FileSystemSource(__dirname),
   target: new HTTPTarget({port: PORT}),
   rules: [
     {
       source: ['.js'],
-      target: ['.js.sha1', '.js.md5'],
+      target: ['.js.sha1', '.js.md5', '.js.crc32'],
       mimeType: 'text/x-hash',
       via: [
         {stream: function () {
           var hash = 'sha1'
+          if (this.output.relPath.endsWith('.crc32')) {
+            throw new Error(CRC32_DUMMY_ERROR_MESSAGE)
+          }
           if (this.output.relPath.endsWith('.md5')) {
             this.output.mimeType = 'text/x-short-hash'
             hash = 'md5'
@@ -70,4 +75,25 @@ test('request alt ext', t => {
   })
 })
 
-test.todo('http errors')
+test('http 404 (matching rule)', t => {
+  t.plan(1)
+  return httpGet('/any.js.md5')
+  .then(function (result) {
+    t.is(result.res.statusCode, 404)
+  })
+})
+test('http 404 (no matching rule)', t => {
+  t.plan(1)
+  return httpGet('/no.ext.matching')
+  .then(function (result) {
+    t.is(result.res.statusCode, 404)
+  })
+})
+test('http 500', t => {
+  t.plan(2)
+  return httpGet('/http.js.crc32')
+  .then(function (result) {
+    t.is(result.res.statusCode, 500)
+    t.true(result.buf.toString().indexOf(CRC32_DUMMY_ERROR_MESSAGE) !== -1)
+  })
+})
