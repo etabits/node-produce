@@ -10,13 +10,14 @@ class HTTPTarget {
 
   requestHandler (req, res) {
     debug('http: got request', req.url)
-    this.produce.process({
+    var io = {
       output: {
         relPath: req.url
       }
-    })
+    }
+    var start = Date.now()
+    this.produce.process(io)
     .then(function (result) {
-      // TODO log request urls like any server would do
       debug('http: processed request', req.url)
 
       var mimeType = result.output.mimeType || result.rule.mimeType
@@ -24,7 +25,12 @@ class HTTPTarget {
         res.statusCode = 203
         res.setHeader('Content-Type', mimeType + '; charset=UTF-8')
       }
-      res.end(result.output.data)
+
+      var data = result.output.data
+      var len = data.length + ((typeof data === 'string') ? 'c' : 'b')
+      var time = (Date.now() - start) + 'ms'
+      console.log(`${res.statusCode} ${req.url}`, time, len)
+      res.end(data)
     })
     .catch(error => console.error(error))
   }
