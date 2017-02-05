@@ -57,3 +57,5 @@ test('automatically expands array .via', t => {
 })
 
 test.todo('expand string source/target into array')
+test.todo('expand mimeType to a function (from string)')
+test.todo('expand mimeType to a function (from map)')

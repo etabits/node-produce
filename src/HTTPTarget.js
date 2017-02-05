@@ -16,10 +16,13 @@ class HTTPTarget {
       }
     })
     .then(function (result) {
+      // TODO log request urls like any server would do
       debug('http: processed request', req.url)
-      if (result.output.mimeType) {
+
+      var mimeType = result.output.mimeType || result.rule.mimeType
+      if (mimeType) {
         res.statusCode = 203
-        res.setHeader('Content-Type', result.output.mimeType + '; charset=UTF-8')
+        res.setHeader('Content-Type', mimeType + '; charset=UTF-8')
       }
       res.end(result.output.data)
     })
