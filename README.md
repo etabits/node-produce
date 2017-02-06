@@ -10,6 +10,11 @@ Install required plugins and it will automatically use them to produce output/se
 
 Example: https://github.com/aularon/produce-example-no-conf
 
+## Micro Configuration
+Very similar to **No Config**, plus you can set per-plugin settings in package.json
+
+Example: https://github.com/aularon/produce-example-micro-conf
+
 ## Simple conf
 ```
 less: less | add_header_note(preview) | yuicompressor(dist) > css
