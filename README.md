@@ -5,19 +5,35 @@
 
 *This module and documentation is still considered work-in-progress. Only no config example is added below for a preview*
 
-## No Configuration
+## Usage Examples
+### As a module
+Check [produce-example-multihash](https://github.com/aularon/produce-example-multihash). This is the current definitive example with concept outline.
+[![Example TTY GIF for multihash serve script](https://aularon.github.io/produce-example-multihash/serve.gif)](https://github.com/aularon/produce-example-multihash)
+
+## Command line use
+### No Configuration
 Install required plugins and it will automatically use them to produce output/serve content
 
 Example: https://github.com/aularon/produce-example-no-conf
 
-## Simple conf
+[![Example TTY GIF for no-conf build mode](https://aularon.github.io/produce-example-no-conf/prod.gif)](https://github.com/aularon/produce-example-no-conf)
+
+### Micro Configuration
+Very similar to **No Config**, plus you can set per-plugin settings in package.json
+
+Example: https://github.com/aularon/produce-example-micro-conf
+
+[![Example TTY GIF for no-conf preview mode](https://aularon.github.io/produce-example-micro-conf/dev.gif)](https://github.com/aularon/produce-example-micro-conf)
+
+## Next
+### Simple conf
 ```
 less: less | add_header_note(preview) | yuicompressor(dist) > css
 pug,jade: pug | add_header_note(preview) > html
 js: babel | add_header_note(preview) | closure > js
 ```
 
-## Advanced conf
+### Advanced conf
 ```js
 {
   rules: [
